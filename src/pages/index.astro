@@ -1,0 +1,34 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import Seccion from '../components/Seccion.astro';
+import Contador from '../components/Contador.astro';
+import Datos from '../components/Datos.astro';
+import Galeria from '../components/Galeria.astro';
+import Rsvp from '../components/Rsvp.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout>
+  <Hero />
+
+  <main id="info">
+    <Seccion class="pt-16 sm:pt-20">
+      <Contador />
+    </Seccion>
+
+    <Seccion titulo="La cita" subtitulo="Dónde, cuándo y cómo llegar">
+      <Datos />
+    </Seccion>
+
+    <Seccion titulo="El lugar" acento="electrico" subtitulo="Finca Palma Azul, Nocaima">
+      <Galeria />
+    </Seccion>
+
+    <Seccion id="confirmar">
+      <Rsvp />
+    </Seccion>
+  </main>
+
+  <Footer />
+</Layout>

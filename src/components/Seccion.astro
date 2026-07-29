@@ -1,0 +1,28 @@
+---
+interface Props {
+  id?: string;
+  titulo?: string;
+  acento?: 'neon' | 'electrico';
+  subtitulo?: string;
+  class?: string;
+}
+
+const { id, titulo, acento = 'neon', subtitulo, class: clase = '' } = Astro.props;
+
+const colorTitulo = acento === 'neon' ? 'text-neon glow-neon' : 'text-electrico glow-electrico';
+---
+
+<section id={id} class={`relative px-5 py-20 sm:px-8 sm:py-28 ${clase}`}>
+  <div class="mx-auto w-full max-w-5xl">
+    {
+      titulo && (
+        <header class="mb-12 text-center">
+          <h2 class={`display-italic text-4xl sm:text-6xl ${colorTitulo}`}>{titulo}</h2>
+          {subtitulo && <p class="mt-4 text-base text-humo sm:text-lg">{subtitulo}</p>}
+          <div class="linea-neon mx-auto mt-7 w-40 max-w-full" />
+        </header>
+      )
+    }
+    <slot />
+  </div>
+</section>

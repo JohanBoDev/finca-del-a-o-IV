@@ -1,0 +1,76 @@
+---
+import { EVENTO } from '../config/evento';
+import Icono from './Icono.astro';
+
+const tarjetas = [
+  {
+    icono: 'calendario' as const,
+    rotulo: 'Cuándo',
+    principal: EVENTO.fechaTexto,
+    secundario: `${EVENTO.horaTexto} · ${EVENTO.notaHora}`,
+    acento: 'neon' as const,
+  },
+  {
+    icono: 'pin' as const,
+    rotulo: 'Dónde',
+    principal: EVENTO.lugar,
+    secundario: `${EVENTO.ubicacion} · ${EVENTO.distancia}`,
+    acento: 'electrico' as const,
+  },
+];
+---
+
+<div class="grid gap-5 sm:grid-cols-2">
+  {
+    tarjetas.map(({ icono, rotulo, principal, secundario, acento }) => (
+      <article
+        class={`rounded-2xl border bg-noche-2/60 p-7 backdrop-blur-sm transition-colors ${
+          acento === 'neon'
+            ? 'border-neon/30 hover:border-neon/70'
+            : 'border-electrico/30 hover:border-electrico/70'
+        }`}
+      >
+        <div class={acento === 'neon' ? 'text-neon' : 'text-electrico'}>
+          <Icono nombre={icono} class="h-8 w-8" />
+        </div>
+        <p class="mt-5 text-[10px] font-semibold uppercase tracking-[0.3em] text-humo">{rotulo}</p>
+        <p class="display-italic mt-2 text-3xl text-hueso sm:text-4xl">{principal}</p>
+        <p class="mt-3 text-sm leading-relaxed text-humo">{secundario}</p>
+      </article>
+    ))
+  }
+</div>
+
+<!-- Mapa satelital de la finca -->
+<div class="marco-electrico mt-6 overflow-hidden rounded-2xl">
+  <iframe
+    src={EVENTO.mapaEmbed}
+    title={`Ubicación de ${EVENTO.lugar} en el mapa`}
+    class="block h-80 w-full border-0 sm:h-105"
+    loading="lazy"
+    allowfullscreen
+    referrerpolicy="strict-origin-when-cross-origin"></iframe>
+</div>
+
+<!-- Acciones: llegar y agendar -->
+<div class="mt-8 flex flex-wrap justify-center gap-3">
+  <a
+    href={EVENTO.mapsUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="inline-flex items-center gap-2.5 rounded-full border border-electrico/50 px-6 py-3 text-sm font-semibold uppercase tracking-wide text-electrico transition-all hover:border-electrico hover:bg-electrico/10"
+  >
+    <Icono nombre="pin" class="h-5 w-5" />
+    Google Maps
+  </a>
+
+  <a
+    href={EVENTO.wazeUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="inline-flex items-center gap-2.5 rounded-full border border-neon/50 px-6 py-3 text-sm font-semibold uppercase tracking-wide text-neon transition-all hover:border-neon hover:bg-neon/10"
+  >
+    <Icono nombre="ruta" class="h-5 w-5" />
+    Waze
+  </a>
+</div>

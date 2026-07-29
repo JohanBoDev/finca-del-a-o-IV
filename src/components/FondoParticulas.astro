@@ -1,0 +1,513 @@
+---
+/**
+ * Fondo vivo de toda la página.
+ *
+ * Tres capas, de atrás hacia adelante:
+ *  1. Auroras — manchas de luz repartidas por TODO el alto del documento,
+ *     no por pantalla. Se desplazan con el scroll a menor velocidad
+ *     (parallax), así el ambiente cambia de forma continua y nunca se ve
+ *     un corte entre secciones.
+ *  2. Canvas de partículas — polvo estelar y luciérnagas sobre el agua.
+ *  3. Grano finísimo, para que los degradados no hagan bandas.
+ *
+ * Va detrás de todo (z-index negativo) y no intercepta clics.
+ *
+ * Ojo: <body> NO puede tener color de fondo propio o tapa esta capa
+ * entera. Ver la nota en global.css.
+ */
+---
+
+<div class="fondo-vivo" aria-hidden="true">
+  <div class="capa-auroras" id="capa-auroras">
+    <div class="aurora aurora-azul" style="top:0%;   left:-14%; width:62vw; --dur:24s"></div>
+    <div class="aurora aurora-neon" style="top:11%;  right:-16%; width:48vw; --dur:31s"></div>
+    <div class="aurora aurora-cian" style="top:24%;  left:2%;   width:56vw; --dur:27s"></div>
+    <div class="aurora aurora-neon" style="top:38%;  right:-10%; width:52vw; --dur:35s"></div>
+    <div class="aurora aurora-azul" style="top:52%;  left:-12%; width:64vw; --dur:29s"></div>
+    <div class="aurora aurora-cian" style="top:66%;  right:-6%; width:50vw; --dur:33s"></div>
+    <div class="aurora aurora-neon" style="top:80%;  left:6%;   width:46vw; --dur:26s"></div>
+    <div class="aurora aurora-azul" style="top:92%;  right:-14%; width:58vw; --dur:37s"></div>
+  </div>
+
+  <canvas id="lienzo-particulas"></canvas>
+
+  <div class="grano"></div>
+</div>
+
+<style>
+  .fondo-vivo {
+    position: fixed;
+    inset: 0;
+    z-index: -10;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* --- Auroras --------------------------------------------------
+     La capa es más alta que la pantalla y se mueve con el scroll.
+     El alto real lo calcula el script según el largo del documento.
+  --------------------------------------------------------------- */
+
+  .capa-auroras {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 300vh;
+    will-change: transform;
+  }
+
+  .aurora {
+    position: absolute;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    /* Blur bajo: se leen como focos de luz definidos, no como niebla. */
+    filter: blur(52px);
+    will-change: transform;
+    animation: respira var(--dur, 30s) ease-in-out infinite;
+  }
+
+  .aurora-azul {
+    background: radial-gradient(
+      circle,
+      rgba(20, 165, 245, 0.55) 0%,
+      rgba(20, 165, 245, 0.22) 38%,
+      transparent 68%
+    );
+  }
+
+  .aurora-cian {
+    background: radial-gradient(
+      circle,
+      rgba(56, 200, 255, 0.42) 0%,
+      rgba(20, 120, 200, 0.18) 40%,
+      transparent 70%
+    );
+  }
+
+  .aurora-neon {
+    background: radial-gradient(
+      circle,
+      rgba(216, 230, 0, 0.3) 0%,
+      rgba(216, 230, 0, 0.12) 38%,
+      transparent 68%
+    );
+  }
+
+  @keyframes respira {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    33% {
+      transform: translate3d(4vw, 3vh, 0) scale(1.14);
+    }
+    66% {
+      transform: translate3d(-3vw, -4vh, 0) scale(0.92);
+    }
+  }
+
+  /* --- Canvas ---------------------------------------------------- */
+
+  #lienzo-particulas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* --- Grano -----------------------------------------------------
+     Ruido muy tenue encima de los degradados. Rompe las bandas de
+     color que salen al desenfocar y da textura de foto en vez de
+     degradado plano de CSS.
+  --------------------------------------------------------------- */
+
+  .grano {
+    position: absolute;
+    inset: -50%;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='r'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23r)'/%3E%3C/svg%3E");
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aurora {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  const lienzo = document.getElementById('lienzo-particulas') as HTMLCanvasElement | null;
+  const capaAuroras = document.getElementById('capa-auroras');
+  const ctx = lienzo?.getContext('2d', { alpha: true });
+
+  const menosMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ==============================================================
+     PARALLAX DE AURORAS
+     La capa se estira para cubrir todo el documento y se desplaza
+     más lento que el contenido. Resultado: el fondo nunca "corta"
+     entre secciones, va cambiando de forma continua.
+     ============================================================== */
+
+  const FACTOR_PARALLAX = 0.35;
+
+  if (capaAuroras) {
+    const ajustarAlto = () => {
+      const recorrido = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      // Alto necesario para que la capa siga cubriendo la pantalla
+      // cuando llegue al final del recorrido, más un margen.
+      capaAuroras.style.height = `${window.innerHeight + recorrido * FACTOR_PARALLAX + 200}px`;
+    };
+
+    let pendiente = false;
+
+    const moverConScroll = () => {
+      pendiente = false;
+      capaAuroras.style.transform = `translate3d(0, ${-window.scrollY * FACTOR_PARALLAX}px, 0)`;
+    };
+
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (pendiente) return;
+        pendiente = true;
+        requestAnimationFrame(moverConScroll);
+      },
+      { passive: true },
+    );
+
+    window.addEventListener('resize', ajustarAlto);
+
+    // El alto del documento cambia cuando entran las imágenes.
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(ajustarAlto).observe(document.body);
+    }
+
+    ajustarAlto();
+    moverConScroll();
+  }
+
+  /* ==============================================================
+     CAMPO DE PARTÍCULAS
+     ============================================================== */
+
+  if (lienzo && ctx) {
+    // Paleta del flyer: azul eléctrico, amarillo neón y chispas blancas.
+    const PALETA = [
+      { rgb: [40, 175, 250], peso: 0.42 },
+      { rgb: [216, 230, 0], peso: 0.26 },
+      { rgb: [230, 244, 255], peso: 0.32 },
+    ];
+
+    const RADIO_CURSOR = 190;
+    const TAU = Math.PI * 2;
+
+    let ancho = 0;
+    let alto = 0;
+    let dpr = 1;
+
+    /* --- Sprites -------------------------------------------------
+       Cada partícula se dibuja como una imagen pre-renderizada en vez
+       de generar un gradiente nuevo por cuadro.
+
+       Las paradas del gradiente son muy cerradas al centro: eso deja
+       un núcleo brillante y definido con un halo suave alrededor, en
+       vez de una mancha difusa.
+    -------------------------------------------------------------- */
+    const LADO_SPRITE = 64;
+
+    const crearSprite = ([r, g, b]: number[]) => {
+      const s = document.createElement('canvas');
+      s.width = s.height = LADO_SPRITE;
+      const sctx = s.getContext('2d')!;
+      const centro = LADO_SPRITE / 2;
+
+      const brillo = sctx.createRadialGradient(centro, centro, 0, centro, centro, centro);
+      brillo.addColorStop(0, `rgba(${r},${g},${b},1)`);
+      brillo.addColorStop(0.09, `rgba(${r},${g},${b},0.92)`);
+      brillo.addColorStop(0.2, `rgba(${r},${g},${b},0.3)`);
+      brillo.addColorStop(0.45, `rgba(${r},${g},${b},0.07)`);
+      brillo.addColorStop(1, `rgba(${r},${g},${b},0)`);
+
+      sctx.fillStyle = brillo;
+      sctx.fillRect(0, 0, LADO_SPRITE, LADO_SPRITE);
+      return s;
+    };
+
+    const sprites = PALETA.map((c) => crearSprite(c.rgb));
+
+    /** Elige un color respetando los pesos de la paleta. */
+    const colorAlAzar = () => {
+      let sorteo = Math.random();
+      for (let i = 0; i < PALETA.length; i++) {
+        sorteo -= PALETA[i].peso;
+        if (sorteo <= 0) return i;
+      }
+      return 0;
+    };
+
+    /* --- Partículas ---------------------------------------------- */
+
+    interface Particula {
+      x: number;
+      y: number;
+      radio: number;
+      subida: number;
+      vaiven: number;
+      velVaiven: number;
+      fase: number;
+      color: number;
+      alfaBase: number;
+      velTitileo: number;
+      faseTitileo: number;
+      empujeX: number;
+      empujeY: number;
+      /** Las más grandes reciben un destello en cruz. */
+      destella: boolean;
+    }
+
+    let particulas: Particula[] = [];
+
+    const nuevaParticula = (yInicial?: number): Particula => {
+      // Reparto sesgado a partículas pequeñas: muchas motas finas y
+      // unas pocas luciérnagas grandes. Eso es lo que da nitidez.
+      const escala = Math.random() ** 2.2;
+      const radio = 0.45 + escala * 2.6;
+
+      return {
+        x: Math.random() * ancho,
+        y: yInicial ?? Math.random() * alto,
+        radio,
+        subida: 3 + Math.random() * 13, // px por segundo, hacia arriba
+        vaiven: 5 + Math.random() * 18,
+        velVaiven: 0.15 + Math.random() * 0.35,
+        fase: Math.random() * TAU,
+        color: colorAlAzar(),
+        alfaBase: 0.3 + Math.random() * 0.6,
+        velTitileo: 0.5 + Math.random() * 1.8,
+        faseTitileo: Math.random() * TAU,
+        empujeX: 0,
+        empujeY: 0,
+        destella: radio > 2.3,
+      };
+    };
+
+    /* --- Ondas al hacer clic (gota en la piscina) ---------------- */
+
+    interface Onda {
+      x: number;
+      y: number;
+      nacida: number;
+    }
+
+    const DURACION_ONDA = 1400;
+    let ondas: Onda[] = [];
+
+    /* --- Cursor --------------------------------------------------- */
+
+    const cursor = { x: -9999, y: -9999, activo: false };
+
+    /* --- Dimensionado --------------------------------------------- */
+
+    const redimensionar = () => {
+      // Hasta 2x: en pantallas retina el campo se ve nítido sin
+      // cuadruplicar el trabajo de dibujo.
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      ancho = window.innerWidth;
+      alto = window.innerHeight;
+
+      lienzo.width = Math.floor(ancho * dpr);
+      lienzo.height = Math.floor(alto * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const objetivo = Math.round(Math.min(190, Math.max(60, (ancho * alto) / 9000)));
+
+      if (particulas.length > objetivo) {
+        particulas.length = objetivo;
+      } else {
+        while (particulas.length < objetivo) particulas.push(nuevaParticula());
+      }
+    };
+
+    /* --- Dibujo de una partícula ---------------------------------- */
+
+    const pintarParticula = (p: Particula, alfa: number) => {
+      const [r, g, b] = PALETA[p.color].rgb;
+      const lado = p.radio * 10;
+
+      // 1. Halo
+      ctx.globalAlpha = alfa;
+      ctx.drawImage(sprites[p.color], p.x - lado / 2, p.y - lado / 2, lado, lado);
+
+      // 2. Núcleo sólido — es lo que hace que se lea como un punto de
+      //    luz definido y no como una mancha.
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = `rgba(${r},${g},${b},${Math.min(1, alfa * 1.35)})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, Math.max(0.4, p.radio * 0.42), 0, TAU);
+      ctx.fill();
+
+      // 3. Destello en cruz para las más brillantes
+      if (p.destella) {
+        const brazo = p.radio * 5;
+        ctx.strokeStyle = `rgba(${r},${g},${b},${alfa * 0.35})`;
+        ctx.lineWidth = 0.75;
+        ctx.beginPath();
+        ctx.moveTo(p.x - brazo, p.y);
+        ctx.lineTo(p.x + brazo, p.y);
+        ctx.moveTo(p.x, p.y - brazo);
+        ctx.lineTo(p.x, p.y + brazo);
+        ctx.stroke();
+      }
+    };
+
+    /* --- Bucle de animación --------------------------------------- */
+
+    let ultimo = performance.now();
+    let cuadro = 0;
+
+    const dibujar = (ahora: number) => {
+      // Se acota el delta: si la pestaña estuvo en segundo plano, no
+      // queremos que todo salte de golpe al volver.
+      const delta = Math.min((ahora - ultimo) / 1000, 0.05);
+      ultimo = ahora;
+      const tiempo = ahora / 1000;
+
+      ctx.clearRect(0, 0, ancho, alto);
+      ctx.globalCompositeOperation = 'lighter';
+
+      // Hilos del cursor hacia las partículas cercanas
+      if (cursor.activo) {
+        ctx.lineWidth = 0.8;
+        for (const p of particulas) {
+          const dx = p.x - cursor.x;
+          const dy = p.y - cursor.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist >= RADIO_CURSOR || dist === 0) continue;
+
+          const cercania = 1 - dist / RADIO_CURSOR;
+
+          // Empuje suave: las partículas se apartan del cursor.
+          p.empujeX += (dx / dist) * cercania * 26 * delta;
+          p.empujeY += (dy / dist) * cercania * 26 * delta;
+
+          ctx.strokeStyle = `rgba(216,230,0,${cercania * 0.14})`;
+          ctx.beginPath();
+          ctx.moveTo(cursor.x, cursor.y);
+          ctx.lineTo(p.x, p.y);
+          ctx.stroke();
+        }
+      }
+
+      // Partículas
+      for (const p of particulas) {
+        p.y -= p.subida * delta;
+        p.x += Math.sin(tiempo * p.velVaiven + p.fase) * p.vaiven * delta;
+
+        // El empuje del cursor se desvanece solo.
+        p.x += p.empujeX * delta;
+        p.y += p.empujeY * delta;
+        p.empujeX *= 0.92;
+        p.empujeY *= 0.92;
+
+        // Al salir por arriba reaparece abajo.
+        if (p.y < -25) {
+          Object.assign(p, nuevaParticula(alto + 25));
+          continue;
+        }
+        if (p.x < -25) p.x = ancho + 25;
+        else if (p.x > ancho + 25) p.x = -25;
+
+        const titileo = 0.5 + 0.5 * Math.sin(tiempo * p.velTitileo + p.faseTitileo);
+        pintarParticula(p, p.alfaBase * titileo);
+      }
+
+      ctx.globalAlpha = 1;
+
+      // Ondas expansivas
+      if (ondas.length > 0) {
+        ctx.lineWidth = 1.5;
+        ondas = ondas.filter((onda) => {
+          const avance = (ahora - onda.nacida) / DURACION_ONDA;
+          if (avance >= 1) return false;
+
+          const radio = avance * 280;
+          const alfa = (1 - avance) * 0.5;
+
+          ctx.strokeStyle = `rgba(40,175,250,${alfa})`;
+          ctx.beginPath();
+          ctx.arc(onda.x, onda.y, radio, 0, TAU);
+          ctx.stroke();
+
+          // Segundo anillo, más pequeño y amarillo, con retraso.
+          if (avance > 0.15) {
+            ctx.strokeStyle = `rgba(216,230,0,${alfa * 0.6})`;
+            ctx.beginPath();
+            ctx.arc(onda.x, onda.y, radio * 0.62, 0, TAU);
+            ctx.stroke();
+          }
+
+          return true;
+        });
+      }
+
+      ctx.globalCompositeOperation = 'source-over';
+      cuadro = requestAnimationFrame(dibujar);
+    };
+
+    /* --- Eventos --------------------------------------------------- */
+
+    window.addEventListener('resize', redimensionar);
+
+    window.addEventListener(
+      'pointermove',
+      (evento) => {
+        // Solo el mouse mueve el campo; en táctil estorbaría al hacer scroll.
+        if (evento.pointerType === 'touch') return;
+        cursor.x = evento.clientX;
+        cursor.y = evento.clientY;
+        cursor.activo = true;
+      },
+      { passive: true },
+    );
+
+    window.addEventListener('pointerleave', () => {
+      cursor.activo = false;
+    });
+
+    window.addEventListener(
+      'pointerdown',
+      (evento) => {
+        if (ondas.length > 6) return;
+        ondas.push({ x: evento.clientX, y: evento.clientY, nacida: performance.now() });
+      },
+      { passive: true },
+    );
+
+    // Pausa cuando la pestaña no se ve: no gasta batería de fondo.
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        cancelAnimationFrame(cuadro);
+      } else if (!menosMovimiento) {
+        ultimo = performance.now();
+        cuadro = requestAnimationFrame(dibujar);
+      }
+    });
+
+    /* --- Arranque -------------------------------------------------- */
+
+    redimensionar();
+
+    if (menosMovimiento) {
+      // Campo estático: se ve el ambiente sin nada moviéndose.
+      ctx.globalCompositeOperation = 'lighter';
+      for (const p of particulas) pintarParticula(p, p.alfaBase);
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = 'source-over';
+    } else {
+      cuadro = requestAnimationFrame(dibujar);
+    }
+  }
+</script>

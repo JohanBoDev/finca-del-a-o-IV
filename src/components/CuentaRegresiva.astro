@@ -1,0 +1,85 @@
+---
+import { EVENTO } from '../config/evento';
+
+const unidades = [
+  { clave: 'dias', etiqueta: 'Días' },
+  { clave: 'horas', etiqueta: 'Horas' },
+  { clave: 'minutos', etiqueta: 'Min' },
+  { clave: 'segundos', etiqueta: 'Seg' },
+];
+---
+
+<div
+  id="cuenta-regresiva"
+  data-fecha={EVENTO.fechaISO}
+  class="flex items-start justify-center gap-2 sm:gap-4"
+>
+  {
+    unidades.map(({ clave, etiqueta }) => (
+      <div class="flex flex-col items-center">
+        <div class="marco-electrico flex min-w-[68px] items-center justify-center rounded-xl bg-noche-2/80 px-3 py-3 backdrop-blur-sm sm:min-w-[92px] sm:px-5 sm:py-4">
+          <span
+            data-unidad={clave}
+            class="display text-3xl tabular-nums text-hueso glow-blanco sm:text-5xl"
+          >
+            --
+          </span>
+        </div>
+        <span class="mt-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-humo sm:text-xs">
+          {etiqueta}
+        </span>
+      </div>
+    ))
+  }
+</div>
+
+<p id="ya-empezo" class="hidden text-center text-lg font-bold uppercase tracking-widest text-neon glow-neon">
+  ¡Ya arrancó la fiesta! 🌴
+</p>
+
+<script>
+  const raiz = document.getElementById('cuenta-regresiva');
+  const avisoInicio = document.getElementById('ya-empezo');
+
+  if (raiz && avisoInicio) {
+    const objetivo = new Date(raiz.dataset.fecha!).getTime();
+
+    const casillas = {
+      dias: raiz.querySelector<HTMLElement>('[data-unidad="dias"]'),
+      horas: raiz.querySelector<HTMLElement>('[data-unidad="horas"]'),
+      minutos: raiz.querySelector<HTMLElement>('[data-unidad="minutos"]'),
+      segundos: raiz.querySelector<HTMLElement>('[data-unidad="segundos"]'),
+    };
+
+    const dosDigitos = (n: number) => String(n).padStart(2, '0');
+
+    // Se declara antes porque `actualizar` corre una vez de forma síncrona,
+    // y si el evento ya pasó necesita poder detener el temporizador.
+    let temporizador: ReturnType<typeof setInterval> | undefined;
+
+    const actualizar = () => {
+      const restante = objetivo - Date.now();
+
+      if (restante <= 0) {
+        raiz.classList.add('hidden');
+        avisoInicio.classList.remove('hidden');
+        clearInterval(temporizador);
+        return;
+      }
+
+      const segundosTotales = Math.floor(restante / 1000);
+      const dias = Math.floor(segundosTotales / 86400);
+      const horas = Math.floor((segundosTotales % 86400) / 3600);
+      const minutos = Math.floor((segundosTotales % 3600) / 60);
+      const segundos = segundosTotales % 60;
+
+      if (casillas.dias) casillas.dias.textContent = dosDigitos(dias);
+      if (casillas.horas) casillas.horas.textContent = dosDigitos(horas);
+      if (casillas.minutos) casillas.minutos.textContent = dosDigitos(minutos);
+      if (casillas.segundos) casillas.segundos.textContent = dosDigitos(segundos);
+    };
+
+    actualizar();
+    if (objetivo - Date.now() > 0) temporizador = setInterval(actualizar, 1000);
+  }
+</script>

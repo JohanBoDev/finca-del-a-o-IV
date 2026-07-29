@@ -1,0 +1,51 @@
+---
+import { EVENTO, cuposRestantes, porcentajeOcupado } from '../config/evento';
+
+const lleno = cuposRestantes === 0;
+---
+
+<div class="mx-auto max-w-2xl">
+  <div
+    class="marco-neon relative overflow-hidden rounded-2xl bg-noche-2/80 px-6 py-9 text-center backdrop-blur-sm sm:px-10 sm:py-11"
+  >
+    <div class="neblina absolute inset-0 opacity-60" aria-hidden="true"></div>
+
+    <div class="relative">
+      <p class="text-[10px] font-semibold uppercase tracking-[0.35em] text-humo sm:text-xs">
+        Confirmados
+      </p>
+
+      <p class="mt-4 flex items-baseline justify-center gap-2">
+        <span class="display text-6xl text-neon glow-neon sm:text-8xl">{EVENTO.confirmados}</span>
+        <span class="display text-3xl text-humo sm:text-4xl">/ {EVENTO.cupoMaximo}</span>
+      </p>
+
+      <!-- Barra de ocupación -->
+      <div class="mt-7 h-2.5 w-full overflow-hidden rounded-full bg-noche-3">
+        <div
+          class="h-full rounded-full bg-linear-to-r from-electrico to-neon transition-[width] duration-700"
+          style={`width:${Math.max(porcentajeOcupado, 2)}%`}
+        >
+        </div>
+      </div>
+
+      <p class="mt-5 text-sm text-humo sm:text-base">
+        {
+          lleno ? (
+            <span class="font-bold uppercase tracking-wide text-electrico">
+              Cupo lleno — escríbenos por si se libera un puesto
+            </span>
+          ) : (
+            <>
+              Quedan{' '}
+              <span class="font-bold text-hueso">
+                {cuposRestantes} {cuposRestantes === 1 ? 'cupo' : 'cupos'}
+              </span>{' '}
+              · {EVENTO.camas} camas para los que se quedan
+            </>
+          )
+        }
+      </p>
+    </div>
+  </div>
+</div>

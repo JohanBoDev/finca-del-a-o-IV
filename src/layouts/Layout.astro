@@ -1,0 +1,63 @@
+---
+import { getImage } from 'astro:assets';
+import '../styles/global.css';
+import FondoParticulas from '../components/FondoParticulas.astro';
+import { EVENTO } from '../config/evento';
+import flyer from '../assets/flyer.png';
+
+const titulo = `${EVENTO.nombre} ${EVENTO.edicion} · ${EVENTO.fechaTexto}`;
+const descripcion = `${EVENTO.lugar} — ${EVENTO.ubicacion}. ${EVENTO.fechaTexto}, ${EVENTO.horaTexto}. Piscina, música y asador. Confirma tu cupo.`;
+
+/**
+ * Miniatura que se ve al pegar el link en WhatsApp.
+ *
+ * El PNG original pesa 826 kB y WhatsApp descarta las previews muy
+ * pesadas, así que se sirve una versión JPEG comprimida. WhatsApp
+ * tampoco lee AVIF ni WebP en la preview: tiene que ser JPEG o PNG.
+ */
+const ogImagen = await getImage({
+  src: flyer,
+  width: 1200,
+  format: 'jpeg',
+  quality: 80,
+});
+---
+
+<!doctype html>
+<html lang="es-CO">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{titulo}</title>
+    <meta name="description" content={descripcion} />
+    <meta name="theme-color" content="#04070d" />
+
+    <!-- Preview del link en WhatsApp / redes -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:image" content={new URL(ogImagen.src, Astro.site ?? 'http://localhost:4321/')} />
+    <meta property="og:image:width" content={String(ogImagen.attributes.width ?? 1200)} />
+    <meta property="og:image:alt" content={`Afiche de ${titulo}`} />
+    <meta property="og:locale" content="es_CO" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Tipografías: Anton (display) + Inter (texto) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <!-- Sin color de fondo propio: taparía el canvas de partículas.
+       El color base vive en <html> (ver global.css). -->
+  <body class="text-hueso antialiased">
+    <FondoParticulas />
+    <slot />
+  </body>
+</html>

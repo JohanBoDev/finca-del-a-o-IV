@@ -1,0 +1,83 @@
+---
+import { EVENTO } from '../config/evento';
+import CuentaRegresiva from './CuentaRegresiva.astro';
+import BotonWhatsapp from './BotonWhatsapp.astro';
+import Icono from './Icono.astro';
+---
+
+<header class="relative flex min-h-svh flex-col items-center justify-center overflow-hidden px-5 py-20 text-center">
+  <!--
+    El hero se apoya solo en el fondo de partículas. Este velo baja un
+    poco el brillo de las auroras detrás del título para que el texto no
+    compita con ellas; se desvanece antes del borde para no dejar una
+    línea que parta la página.
+  -->
+  <div
+    class="absolute inset-0 bg-linear-to-b from-noche/50 via-noche/25 to-transparent"
+    aria-hidden="true"
+  >
+  </div>
+
+  <div class="relative z-10 flex w-full max-w-4xl flex-col items-center">
+    <p
+      class="aparece mb-5 text-xs font-semibold uppercase tracking-[0.45em] text-electrico sm:text-sm"
+    >
+      {EVENTO.tagline}
+    </p>
+
+    <h1 class="aparece flex flex-col items-center" style="animation-delay:80ms">
+      <span class="display-italic text-5xl text-hueso glow-blanco sm:text-8xl">La Finca</span>
+      <span class="mt-1 flex items-end gap-3 sm:mt-2 sm:gap-5">
+        <span class="display-italic parpadea text-5xl text-neon glow-neon sm:text-8xl">
+          Del Año
+        </span>
+        <span class="display-italic text-5xl text-electrico glow-electrico sm:text-8xl">
+          {EVENTO.edicion}
+        </span>
+      </span>
+    </h1>
+
+    <div class="linea-neon aparece mt-8 w-64 max-w-full" style="animation-delay:160ms"></div>
+
+    <!-- Fecha y hora, con el mismo trato de recuadro del flyer -->
+    <div
+      class="aparece mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4"
+      style="animation-delay:220ms"
+    >
+      <span
+        class="marco-neon rounded-lg bg-noche-2/70 px-5 py-2.5 text-lg font-extrabold uppercase tracking-wide text-neon backdrop-blur-sm sm:text-2xl"
+      >
+        {EVENTO.fechaTexto}
+      </span>
+      <span
+        class="marco-electrico inline-flex items-center gap-2 rounded-lg bg-noche-2/70 px-5 py-2.5 text-lg font-extrabold uppercase tracking-wide text-electrico backdrop-blur-sm sm:text-2xl"
+      >
+        <Icono nombre="reloj" class="h-5 w-5 sm:h-6 sm:w-6" />
+        {EVENTO.horaTexto}
+      </span>
+    </div>
+
+    <p class="aparece mt-6 text-sm text-humo sm:text-base" style="animation-delay:280ms">
+      <span class="font-semibold text-hueso">{EVENTO.lugar}</span> · {EVENTO.ubicacion}
+    </p>
+
+    <div class="aparece mt-12 w-full" style="animation-delay:340ms">
+      <p class="mb-5 text-[10px] font-semibold uppercase tracking-[0.3em] text-humo sm:text-xs">
+        Falta poco
+      </p>
+      <CuentaRegresiva />
+    </div>
+
+    <div class="aparece mt-12" style="animation-delay:400ms">
+      <BotonWhatsapp texto="Confirmar mi cupo" tamano="lg" />
+    </div>
+  </div>
+
+  <a
+    href="#info"
+    class="absolute bottom-7 z-10 text-humo transition-colors hover:text-neon"
+    aria-label="Ver la información del evento"
+  >
+    <Icono nombre="flecha" class="h-7 w-7 animate-bounce" />
+  </a>
+</header>

@@ -1,0 +1,36 @@
+---
+import { EVENTO, cuposRestantes } from '../config/evento';
+import BotonWhatsapp from './BotonWhatsapp.astro';
+---
+
+<div class="relative overflow-hidden rounded-3xl border border-neon/30 bg-noche-2/70 px-6 py-16 text-center sm:px-12 sm:py-20">
+  <div class="neblina absolute inset-0" aria-hidden="true"></div>
+
+  <div class="relative mx-auto max-w-2xl">
+    <h2 class="display-italic text-4xl text-hueso glow-blanco sm:text-6xl">
+      ¿Vienes o qué?
+    </h2>
+
+    <p class="mt-6 text-base leading-relaxed text-humo sm:text-lg">
+      Dale al botón y nos llega tu confirmación directo por WhatsApp. El mensaje ya va escrito
+      — solo lo envías.
+    </p>
+
+    <div class="mt-10">
+      <BotonWhatsapp texto="Confirmar mi cupo" tamano="lg" />
+    </div>
+
+    <p class="mt-8 text-xs uppercase tracking-[0.25em] text-humo">
+      {
+        cuposRestantes > 0
+          ? `Quedan ${cuposRestantes} de ${EVENTO.cupoMaximo} cupos`
+          : 'Cupo lleno · lista de espera'
+      }
+    </p>
+
+    <p class="mt-4 text-sm text-humo">
+      Si te vas a quedar a dormir, dilo en el mensaje: son solo{' '}
+      <span class="font-semibold text-neon">{EVENTO.camas} camas</span>.
+    </p>
+  </div>
+</div>

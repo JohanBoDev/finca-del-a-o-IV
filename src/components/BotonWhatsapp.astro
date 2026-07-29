@@ -1,0 +1,27 @@
+---
+import Icono from './Icono.astro';
+import { whatsappUrl } from '../config/evento';
+
+interface Props {
+  texto?: string;
+  tamano?: 'md' | 'lg';
+  class?: string;
+}
+
+const { texto = 'Confirmar por WhatsApp', tamano = 'md', class: clase = '' } = Astro.props;
+
+const medidas =
+  tamano === 'lg'
+    ? 'px-8 py-5 text-lg sm:text-xl gap-3'
+    : 'px-6 py-3.5 text-base gap-2.5';
+---
+
+<a
+  href={whatsappUrl}
+  target="_blank"
+  rel="noopener noreferrer"
+  class={`group inline-flex items-center justify-center rounded-full bg-neon font-bold uppercase tracking-wide text-noche transition-all duration-200 hover:bg-neon-suave hover:shadow-[0_0_36px_rgba(216,230,0,0.65)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neon active:scale-[0.97] ${medidas} ${clase}`}
+>
+  <Icono nombre="whatsapp" class={tamano === 'lg' ? 'h-6 w-6' : 'h-5 w-5'} />
+  <span>{texto}</span>
+</a>
