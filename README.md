@@ -54,8 +54,28 @@ sola — no hay que registrar nada en código.
 - Súbelas grandes: Astro las comprime a AVIF y WebP en varios tamaños.
 - Las verticales ocupan dos filas del mosaico automáticamente.
 
-El flyer va aparte, en `src/assets/flyer.png`. No sale en la página: se usa
-solo como miniatura del link en WhatsApp.
+## La miniatura del link
+
+Lo que se ve al pegar el link en WhatsApp es **`public/og.jpg`** (1200×630):
+el flyer montado sobre un lienzo horizontal.
+
+Si cambias `src/assets/flyer.png`, regenérala:
+
+```bash
+npm run og
+```
+
+No corre en cada build a propósito. La miniatura solo cambia si cambias el
+flyer, y la URL tiene que quedarse fija: WhatsApp cachea la preview por link,
+así que una ruta con hash rompería el caché en cada despliegue sin necesidad.
+
+Tres detalles que no son negociables si la vas a tocar:
+
+- **1200×630 horizontal.** WhatsApp recorta las verticales a un cuadrito.
+- **JPEG.** No lee AVIF ni WebP en las previews.
+- **Ruta sin hash**, por el caché.
+
+El flyer en sí no aparece en ninguna parte de la página.
 
 ## Estructura
 

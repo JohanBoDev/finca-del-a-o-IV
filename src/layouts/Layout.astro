@@ -1,26 +1,27 @@
 ---
-import { getImage } from 'astro:assets';
 import '../styles/global.css';
 import FondoParticulas from '../components/FondoParticulas.astro';
 import { EVENTO } from '../config/evento';
-import flyer from '../assets/flyer.png';
 
 const titulo = `${EVENTO.nombre} ${EVENTO.edicion} · ${EVENTO.fechaTexto}`;
-const descripcion = `${EVENTO.lugar} — ${EVENTO.ubicacion}. ${EVENTO.fechaTexto}, ${EVENTO.horaTexto}. Piscina, música y asador. Confirma tu cupo.`;
+const descripcion = `${EVENTO.lugar} — ${EVENTO.ubicacion}. ${EVENTO.fechaTexto}, ${EVENTO.horaTexto}. Piscina y música. Confirma tu cupo.`;
+
+const base = Astro.site ?? new URL('http://localhost:4321/');
 
 /**
- * Miniatura que se ve al pegar el link en WhatsApp.
+ * Miniatura del link (public/og.jpg — el flyer montado sobre un lienzo
+ * horizontal). Tres cosas importan y las tres están resueltas ahí:
  *
- * El PNG original pesa 826 kB y WhatsApp descarta las previews muy
- * pesadas, así que se sirve una versión JPEG comprimida. WhatsApp
- * tampoco lee AVIF ni WebP en la preview: tiene que ser JPEG o PNG.
+ *  · 1200x630. El flyer suelto es vertical y WhatsApp recorta las
+ *    verticales a un cuadrito en vez de mostrar preview grande.
+ *  · JPEG. WhatsApp no lee AVIF ni WebP en las previews.
+ *  · URL fija, sin hash. WhatsApp cachea la preview por link, así que
+ *    una ruta que cambia con cada build rompe el caché sin necesidad.
+ *
+ * Se genera aparte del build; ver la nota en el README.
  */
-const ogImagen = await getImage({
-  src: flyer,
-  width: 1200,
-  format: 'jpeg',
-  quality: 80,
-});
+const OG = { ruta: '/og.jpg', ancho: 1200, alto: 630 };
+const urlCanonica = new URL(Astro.url.pathname, base);
 ---
 
 <!doctype html>
@@ -33,17 +34,27 @@ const ogImagen = await getImage({
 
     <title>{titulo}</title>
     <meta name="description" content={descripcion} />
-    <meta name="theme-color" content="#04070d" />
+    <meta name="theme-color" content="#070c16" />
+    <link rel="canonical" href={urlCanonica} />
 
     <!-- Preview del link en WhatsApp / redes -->
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={`${EVENTO.nombre} ${EVENTO.edicion}`} />
+    <meta property="og:url" content={urlCanonica} />
     <meta property="og:title" content={titulo} />
     <meta property="og:description" content={descripcion} />
-    <meta property="og:image" content={new URL(ogImagen.src, Astro.site ?? 'http://localhost:4321/')} />
-    <meta property="og:image:width" content={String(ogImagen.attributes.width ?? 1200)} />
+    <meta property="og:image" content={new URL(OG.ruta, base)} />
+    <meta property="og:image:secure_url" content={new URL(OG.ruta, base)} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content={String(OG.ancho)} />
+    <meta property="og:image:height" content={String(OG.alto)} />
     <meta property="og:image:alt" content={`Afiche de ${titulo}`} />
     <meta property="og:locale" content="es_CO" />
+
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={titulo} />
+    <meta name="twitter:description" content={descripcion} />
+    <meta name="twitter:image" content={new URL(OG.ruta, base)} />
 
     <!-- Tipografías: Anton (display) + Inter (texto) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

@@ -52,7 +52,15 @@ export const EVENTO = {
   whatsapp: {
     // Con indicativo de Colombia (57) y sin signos.
     numero: '573224395306',
-    mensaje: '¡Hola! Confirmo mi asistencia a La Finca del Año IV 🌴 (8 de agosto)',
+
+    /**
+     * Texto que llega prellenado al chat.
+     *
+     * Termina en "Nombre: " a propósito: WhatsApp deja el cursor al
+     * final del mensaje, así que la persona solo escribe y envía. Sin
+     * este campo llegan confirmaciones de números desconocidos.
+     */
+    mensaje: '¡Hola! Confirmo mi asistencia a La Finca del Año IV 🌴 (8 de agosto)\n\nNombre: ',
   },
 } as const;
 
