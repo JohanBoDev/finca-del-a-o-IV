@@ -46,7 +46,7 @@ export const EVENTO = {
    * Sube este número a mano cada vez que te confirmen por WhatsApp.
    * Es el único valor que vas a estar editando seguido.
    */
-  confirmados: 15,
+  confirmados: 21,
 
   // --- Confirmación por WhatsApp ---------------------------
   whatsapp: {
