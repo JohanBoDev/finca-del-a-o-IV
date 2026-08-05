@@ -1,7 +1,7 @@
 # La Finca del Año IV
 
-Página de información y confirmación para la fiesta del **8 de agosto de 2026**
-en la Finca Palma Azul (Nocaima, sector Cocunche).
+Página de información y confirmación para la fiesta del **viernes 7 y sábado 8
+de agosto de 2026** en la Finca Palma Azul (Nocaima, sector Cocunche).
 
 Se comparte por WhatsApp: quien abre el link ve la fecha, la cuenta regresiva,
 cómo llegar, las fotos del lugar y un botón que devuelve la confirmación al chat.
@@ -33,7 +33,10 @@ Guardas, haces `git push` y Vercel redespliega solo en unos 30 segundos.
 
 | Campo | Qué controla |
 | --- | --- |
-| `fechaISO` | La cuenta regresiva |
+| `fechaISO` | La cuenta regresiva (apunta al arranque: viernes 2:00 PM) |
+| `dias`, `mesTexto` | Las casillas de fecha del hero |
+| `fechaTexto`, `fechaBreve` | La fecha escrita (título, tarjeta, pie) |
+| `duracionTexto` | La etiqueta de "2 días, 2 noches" |
 | `cupoMaximo` | El denominador del contador (30) |
 | `camas` | Los cupos para dormir (14) |
 | `whatsapp.numero` | A dónde llegan las confirmaciones |

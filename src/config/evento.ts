@@ -15,12 +15,37 @@ export const EVENTO = {
   tagline: 'Cuarta edición',
 
   // --- Cuándo ----------------------------------------------
+  // La fiesta son DOS días: viernes 7 y sábado 8 de agosto.
+  //
   // Formato ISO con zona horaria de Colombia (-05:00).
-  // De aquí salen la cuenta regresiva y el archivo de calendario.
-  fechaISO: '2026-08-08T14:00:00-05:00',
-  fechaTexto: 'Sábado 08.08.2026',
+  // De `fechaISO` sale la cuenta regresiva: apunta al arranque, o sea
+  // el viernes a las 2:00 PM.
+  fechaISO: '2026-08-07T14:00:00-05:00',
+  // Cierre real (la salida del domingo). No se muestra en ningún lado:
+  // está acá para el día que se genere el archivo de calendario.
+  fechaFinISO: '2026-08-09T11:00:00-05:00',
+
+  /**
+   * Los dos días, para el bloque de fecha del hero.
+   * `rotulo` va arriba en pequeño y `numero` grande debajo.
+   */
+  dias: [
+    { rotulo: 'Vie', numero: '07' },
+    { rotulo: 'Sáb', numero: '08' },
+  ],
+  mesTexto: 'Agosto 2026',
+
+  /** Versión en prosa, para el título del navegador y la preview del link. */
+  fechaTexto: 'Viernes 7 y Sábado 8 de agosto de 2026',
+  /** Versión sin el mes, para la tarjeta "Cuándo" y el pie de página. */
+  fechaBreve: 'Viernes 7 y Sábado 8',
+
+  // Se duerme viernes y sábado. En la página solo se muestran los dos
+  // días de fiesta (el domingo es solo la salida), así que va "2 días,
+  // 2 noches" a propósito.
+  duracionTexto: '2 días, 2 noches',
   horaTexto: '2:00 PM',
-  notaHora: 'Llegada libre — desde las 2:00 PM en adelante',
+  notaHora: 'Llegada libre — desde las 2:00 PM del viernes',
 
   // --- Dónde -----------------------------------------------
   lugar: 'Finca Palma Azul',
@@ -60,7 +85,8 @@ export const EVENTO = {
      * final del mensaje, así que la persona solo escribe y envía. Sin
      * este campo llegan confirmaciones de números desconocidos.
      */
-    mensaje: '¡Hola! Confirmo mi asistencia a La Finca del Año IV 🌴 (8 de agosto)\n\nNombre: ',
+    mensaje:
+      '¡Hola! Confirmo mi asistencia a La Finca del Año IV 🌴 (7 y 8 de agosto)\n\nNombre: ',
   },
 } as const;
 

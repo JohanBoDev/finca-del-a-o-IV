@@ -6,15 +6,19 @@ const tarjetas = [
   {
     icono: 'calendario' as const,
     rotulo: 'Cuándo',
-    principal: EVENTO.fechaTexto,
-    secundario: `${EVENTO.horaTexto} · ${EVENTO.notaHora}`,
+    principal: EVENTO.fechaBreve,
+    // La duración va aparte, en una etiqueta: es el dato que más
+    // preguntan ahora que la fiesta dejó de ser de un solo día.
+    etiqueta: EVENTO.duracionTexto,
+    secundario: `${EVENTO.mesTexto} · ${EVENTO.notaHora}`,
     acento: 'neon' as const,
   },
   {
     icono: 'pin' as const,
     rotulo: 'Dónde',
     principal: EVENTO.lugar,
-    secundario: `${EVENTO.ubicacion} · ${EVENTO.distancia}`,
+    etiqueta: EVENTO.distancia,
+    secundario: EVENTO.ubicacion,
     acento: 'electrico' as const,
   },
 ];
@@ -22,7 +26,7 @@ const tarjetas = [
 
 <div class="grid gap-5 sm:grid-cols-2">
   {
-    tarjetas.map(({ icono, rotulo, principal, secundario, acento }) => (
+    tarjetas.map(({ icono, rotulo, principal, etiqueta, secundario, acento }) => (
       <article
         class={`rounded-2xl border bg-noche-2/60 p-7 backdrop-blur-sm transition-colors ${
           acento === 'neon'
@@ -35,6 +39,15 @@ const tarjetas = [
         </div>
         <p class="mt-5 text-[10px] font-semibold uppercase tracking-[0.3em] text-humo">{rotulo}</p>
         <p class="display-italic mt-2 text-3xl text-hueso sm:text-4xl">{principal}</p>
+        <p
+          class={`mt-4 inline-block rounded-full border px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] ${
+            acento === 'neon'
+              ? 'border-neon/40 bg-neon/10 text-neon'
+              : 'border-electrico/40 bg-electrico/10 text-electrico'
+          }`}
+        >
+          {etiqueta}
+        </p>
         <p class="mt-3 text-sm leading-relaxed text-humo">{secundario}</p>
       </article>
     ))

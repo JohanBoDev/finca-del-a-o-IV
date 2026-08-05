@@ -39,22 +39,45 @@ import Icono from './Icono.astro';
 
     <div class="linea-neon aparece mt-8 w-64 max-w-full" style="animation-delay:160ms"></div>
 
-    <!-- Fecha y hora, con el mismo trato de recuadro del flyer -->
-    <div
-      class="aparece mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4"
-      style="animation-delay:220ms"
-    >
-      <span
-        class="marco-neon rounded-lg bg-noche-2/70 px-5 py-2.5 text-lg font-extrabold uppercase tracking-wide text-neon backdrop-blur-sm sm:text-2xl"
-      >
-        {EVENTO.fechaTexto}
-      </span>
-      <span
-        class="marco-electrico inline-flex items-center gap-2 rounded-lg bg-noche-2/70 px-5 py-2.5 text-lg font-extrabold uppercase tracking-wide text-electrico backdrop-blur-sm sm:text-2xl"
-      >
-        <Icono nombre="reloj" class="h-5 w-5 sm:h-6 sm:w-6" />
-        {EVENTO.horaTexto}
-      </span>
+    <!--
+      Fecha y hora, con el mismo trato de recuadro del flyer.
+      Son dos días, así que cada uno va en su casilla dentro del mismo
+      marco: se lee "viernes 07 y sábado 08" de un vistazo, sin alargar
+      el recuadro con una frase larga.
+    -->
+    <div class="aparece mt-8 flex flex-col items-center" style="animation-delay:220ms">
+      <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+        <div
+          class="marco-neon flex items-center gap-4 rounded-lg bg-noche-2/70 px-5 py-2 backdrop-blur-sm sm:gap-6 sm:px-7 sm:py-2.5"
+        >
+          {
+            EVENTO.dias.map(({ rotulo, numero }, i) => (
+              <Fragment>
+                {i > 0 && <span class="h-9 w-px bg-neon/40 sm:h-11" aria-hidden="true" />}
+                <span class="flex flex-col items-center">
+                  <span class="text-[9px] font-bold uppercase tracking-[0.3em] text-humo sm:text-[11px]">
+                    {rotulo}
+                  </span>
+                  <span class="display mt-1.5 text-3xl text-neon glow-neon sm:text-4xl">
+                    {numero}
+                  </span>
+                </span>
+              </Fragment>
+            ))
+          }
+        </div>
+
+        <span
+          class="marco-electrico inline-flex items-center gap-2 rounded-lg bg-noche-2/70 px-5 py-2.5 text-lg font-extrabold uppercase tracking-wide text-electrico backdrop-blur-sm sm:text-2xl"
+        >
+          <Icono nombre="reloj" class="h-5 w-5 sm:h-6 sm:w-6" />
+          {EVENTO.horaTexto}
+        </span>
+      </div>
+
+      <p class="mt-4 text-[10px] font-semibold uppercase tracking-[0.3em] text-humo sm:text-xs">
+        {EVENTO.mesTexto} · <span class="text-neon">{EVENTO.duracionTexto}</span>
+      </p>
     </div>
 
     <p class="aparece mt-6 text-sm text-humo sm:text-base" style="animation-delay:280ms">

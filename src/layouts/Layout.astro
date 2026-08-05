@@ -3,8 +3,8 @@ import '../styles/global.css';
 import FondoParticulas from '../components/FondoParticulas.astro';
 import { EVENTO } from '../config/evento';
 
-const titulo = `${EVENTO.nombre} ${EVENTO.edicion} · ${EVENTO.fechaTexto}`;
-const descripcion = `${EVENTO.lugar} — ${EVENTO.ubicacion}. ${EVENTO.fechaTexto}, ${EVENTO.horaTexto}. Piscina y música. Confirma tu cupo.`;
+const titulo = `${EVENTO.nombre} ${EVENTO.edicion} · ${EVENTO.fechaBreve} de agosto`;
+const descripcion = `${EVENTO.lugar} — ${EVENTO.ubicacion}. ${EVENTO.fechaTexto} · ${EVENTO.duracionTexto}, desde las ${EVENTO.horaTexto}. Piscina y música. Confirma tu cupo.`;
 
 const base = Astro.site ?? new URL('http://localhost:4321/');
 
