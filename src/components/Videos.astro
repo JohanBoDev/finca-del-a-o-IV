@@ -1,0 +1,43 @@
+---
+/**
+ * Videos de la fiesta. Viven en public/videos/<carpeta>/ como pares
+ * NN.mp4 + NN.jpg (la portada). Para agregar uno, suelta el par ahí.
+ *
+ * preload="none": no se descarga nada hasta que alguien le da play,
+ * así la página no se vuelve pesada por los videos.
+ */
+import { readdirSync } from 'node:fs';
+
+interface Props {
+  carpeta: string;
+}
+
+const { carpeta } = Astro.props;
+
+const archivos = readdirSync(`public/videos/${carpeta}`)
+  .filter((f) => f.endsWith('.mp4'))
+  .sort();
+
+const videos = archivos.map((f) => {
+  const base = `/videos/${carpeta}/${f.replace(/\.mp4$/, '')}`;
+  return { src: `${base}.mp4`, poster: `${base}.jpg` };
+});
+---
+
+<div class="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+  {
+    videos.map(({ src, poster }, i) => (
+      <div class="marco-electrico overflow-hidden rounded-xl bg-black">
+        <video
+          src={src}
+          poster={poster}
+          controls
+          playsinline
+          preload="none"
+          class="aspect-9/16 h-full w-full object-contain"
+          aria-label={`Video ${i + 1} de la fiesta`}
+        />
+      </div>
+    ))
+  }
+</div>

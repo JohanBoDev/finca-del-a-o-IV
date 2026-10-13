@@ -1,5 +1,11 @@
 ---
-import { EVENTO } from '../config/evento';
+import type { Evento } from '../config/evento';
+
+interface Props {
+  evento: Evento;
+}
+
+const { evento } = Astro.props;
 
 const unidades = [
   { clave: 'dias', etiqueta: 'Días' },
@@ -11,7 +17,7 @@ const unidades = [
 
 <div
   id="cuenta-regresiva"
-  data-fecha={EVENTO.fechaISO}
+  data-fecha={evento.fechaISO}
   class="flex items-start justify-center gap-2 sm:gap-4"
 >
   {

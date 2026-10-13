@@ -1,5 +1,11 @@
 ---
-import { EVENTO } from '../config/evento';
+import type { Evento } from '../config/evento';
+
+interface Props {
+  evento: Evento;
+}
+
+const { evento: EVENTO } = Astro.props;
 ---
 
 <footer class="border-t border-white/8 px-5 py-14 text-center">

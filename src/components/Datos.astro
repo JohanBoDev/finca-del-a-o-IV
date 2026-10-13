@@ -1,6 +1,12 @@
 ---
-import { EVENTO } from '../config/evento';
+import type { Evento } from '../config/evento';
 import Icono from './Icono.astro';
+
+interface Props {
+  evento: Evento;
+}
+
+const { evento: EVENTO } = Astro.props;
 
 const tarjetas = [
   {

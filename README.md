@@ -1,7 +1,8 @@
-# La Finca del Año IV
+# La Finca del Año
 
-Página de información y confirmación para la fiesta del **viernes 7 y sábado 8
-de agosto de 2026** en la Finca Palma Azul (Nocaima, sector Cocunche).
+Página de información y confirmación de la fiesta. La principal es la **V**
+(sábado 14 y domingo 15 de noviembre de 2026, Finca Casa Blanca, Nocaima);
+la **IV** queda en `/iv` como recuerdo.
 
 Se comparte por WhatsApp: quien abre el link ve la fecha, la cuenta regresiva,
 cómo llegar, las fotos del lugar y un botón que devuelve la confirmación al chat.
@@ -17,87 +18,79 @@ npm run preview  # revisa el build antes de desplegar
 
 ## Lo que vas a estar editando
 
-Casi todo vive en un solo archivo: **`src/config/evento.ts`**.
+Cada edición tiene su propio archivo en `src/config/`:
+
+| Archivo | Página | Qué es |
+| --- | --- | --- |
+| **`finca-v.ts`** | `/` | La que viene. **Es el que vas a tocar.** |
+| `finca-iv.ts` | `/iv` | Recuerdo de la anterior: solo fotos, sin confirmar |
 
 ### Subir el contador de confirmados
 
-Las confirmaciones llegan por WhatsApp, así que el número se lleva a mano:
+En `src/config/finca-v.ts`:
 
 ```ts
-confirmados: 15,   // ← súbelo cuando te confirmen
+confirmados: 12,   // ← súbelo cuando te confirmen
 ```
 
 Guardas, haces `git push` y Vercel redespliega solo en unos 30 segundos.
 
-### Otros valores en ese mismo archivo
+Ahí mismo están la fecha (`fechaISO` alimenta la cuenta regresiva), el lugar,
+el cupo (`cupoMaximo`), dónde se duerme (`dormir`), el WhatsApp y el mapa.
 
-| Campo | Qué controla |
-| --- | --- |
-| `fechaISO` | La cuenta regresiva (apunta al arranque: viernes 2:00 PM) |
-| `dias`, `mesTexto` | Las casillas de fecha del hero |
-| `fechaTexto`, `fechaBreve` | La fecha escrita (título, tarjeta, pie) |
-| `duracionTexto` | La etiqueta de "2 días, 2 noches" |
-| `cupoMaximo` | El denominador del contador (30) |
-| `camas` | Los cupos para dormir (14) |
-| `whatsapp.numero` | A dónde llegan las confirmaciones |
-| `whatsapp.mensaje` | El texto que va prellenado |
-| `coordenadas`, `mapsUrl`, `wazeUrl` | Los botones de navegación |
-| `mapaEmbed` | El mapa satelital incrustado |
+## Fotos
 
-## Agregar o cambiar fotos
+Cada edición tiene su carpeta: **`src/assets/fotos/v/`** y
+**`src/assets/fotos/iv/`**. Sueltas los archivos ahí y la galería los lee sola.
 
-Suelta los archivos en **`src/assets/fotos/`** y ya. La galería lee la carpeta
-sola — no hay que registrar nada en código.
+- El orden es alfabético: numéralas (`01-piscina.jpg`, `02-la-casa.jpg`…).
+- El nombre se convierte en el texto alternativo; los automáticos
+  (WhatsApp, UUID) se reemplazan por uno genérico.
+- La primera foto de la IV es la portada de su tarjeta en "Nuestras fincas".
 
-- Formatos: `.jpg` `.jpeg` `.png` `.webp` `.avif`
-- El orden es alfabético, así que numéralas si quieres controlarlo:
-  `01-piscina.jpg`, `02-terraza.jpg`…
-- El nombre del archivo se convierte en el texto alternativo. Los nombres
-  automáticos (WhatsApp, UUID, capturas) se reemplazan por uno genérico.
-- Súbelas grandes: Astro las comprime a AVIF y WebP en varios tamaños.
-- Las verticales ocupan dos filas del mosaico automáticamente.
+## Paletas
+
+Cada edición tiene su paleta en `src/styles/global.css`. La IV usa los
+valores base (amarillo neón + azul) y la V los sobrescribe en el bloque
+`html[data-edicion="v"]` (rosa + turquesa). El fondo de partículas toma los
+colores de ahí mismo.
 
 ## La miniatura del link
 
-Lo que se ve al pegar el link en WhatsApp es **`public/og.jpg`** (1200×630):
-el flyer montado sobre un lienzo horizontal.
+`npm run og` genera las dos (1200×630, JPEG):
 
-Si cambias `src/assets/flyer.png`, regenérala:
+- **`public/og.jpg`** → la V: `fotos/v/01-piscina-con-vista.jpeg` con el título encima.
+- **`public/og-iv.jpg`** → la IV: su flyer (`src/assets/flyer-iv.png`).
 
-```bash
-npm run og
-```
+No corre en cada build a propósito: la URL tiene que quedarse fija porque
+WhatsApp cachea la preview por link. Si cambias la fecha o el lugar de la V,
+cambia también el texto en `scripts/generar-og.mjs` y vuelve a correrlo.
 
-No corre en cada build a propósito. La miniatura solo cambia si cambias el
-flyer, y la URL tiene que quedarse fija: WhatsApp cachea la preview por link,
-así que una ruta con hash rompería el caché en cada despliegue sin necesidad.
+## Para la próxima edición (la VI)
 
-Tres detalles que no son negociables si la vas a tocar:
-
-- **1200×630 horizontal.** WhatsApp recorta las verticales a un cuadrito.
-- **JPEG.** No lee AVIF ni WebP en las previews.
-- **Ruta sin hash**, por el caché.
-
-El flyer en sí no aparece en ninguna parte de la página.
+1. Copia `finca-v.ts` a `finca-vi.ts` y cambia los datos.
+2. `pages/index.astro` pasa a importar la VI; crea `pages/v.astro` copiando `iv.astro`.
+3. Agrega la V a la lista de `components/EdicionesPasadas.astro`.
+4. Paleta nueva en `global.css`, fotos en `fotos/vi/`, y `npm run og`.
 
 ## Estructura
 
 ```
 src/
-├─ config/evento.ts        ← todos los datos del evento
-├─ assets/
-│  ├─ fotos/               ← las fotos de la finca
-│  └─ flyer.png            ← miniatura del link
-├─ layouts/Layout.astro    ← head, metadatos, tipografías
-├─ styles/global.css       ← paleta y utilidades de neón
-├─ components/
-│  ├─ FondoParticulas      ← auroras + partículas interactivas
-│  ├─ Hero                 ← título y cuenta regresiva
-│  ├─ Contador             ← confirmados / cupo
-│  ├─ Datos                ← cuándo, dónde y mapa
-│  ├─ Galeria              ← mosaico con visor
-│  └─ Rsvp                 ← botón de WhatsApp
-└─ pages/index.astro
+├─ config/
+│  ├─ evento.ts            ← forma común de una edición + utilidades
+│  ├─ finca-v.ts           ← la que viene (/)
+│  └─ finca-iv.ts          ← recuerdo (/iv)
+├─ assets/fotos/{v,iv}/    ← fotos de cada finca
+├─ layouts/Layout.astro    ← head, metadatos, paleta por edición
+├─ styles/global.css       ← paletas y utilidades de neón
+├─ components/             ← reciben la edición como prop `evento`
+│  ├─ Hero                 ← título, cuenta regresiva (o modo recuerdo)
+│  ├─ Contador · Datos · Galeria · Rsvp · Footer
+│  └─ EdicionesPasadas     ← tarjetas "Nuestras fincas"
+└─ pages/
+   ├─ index.astro          ← la V
+   └─ iv.astro             ← la IV
 ```
 
 ## Despliegue

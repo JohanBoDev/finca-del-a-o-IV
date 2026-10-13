@@ -6,29 +6,40 @@ import Contador from '../components/Contador.astro';
 import Datos from '../components/Datos.astro';
 import Galeria from '../components/Galeria.astro';
 import Rsvp from '../components/Rsvp.astro';
+import EdicionesPasadas from '../components/EdicionesPasadas.astro';
+import TiraRollo from '../components/TiraRollo.astro';
 import Footer from '../components/Footer.astro';
+import { FINCA_V as EVENTO } from '../config/finca-v';
 ---
 
-<Layout>
-  <Hero />
+<Layout evento={EVENTO}>
+  <Hero evento={EVENTO} />
 
   <main id="info">
     <Seccion class="pt-16 sm:pt-20">
-      <Contador />
+      <Contador evento={EVENTO} />
     </Seccion>
 
     <Seccion titulo="La cita" subtitulo="Dónde, cuándo y cómo llegar">
-      <Datos />
+      <Datos evento={EVENTO} />
     </Seccion>
 
-    <Seccion titulo="El lugar" acento="electrico" subtitulo="Finca Palma Azul, Nocaima">
-      <Galeria />
+    <Seccion titulo="Nuestras fincas" subtitulo="¿Primera vez? Así se vivió la anterior">
+      <TiraRollo />
+      <div class="mt-8">
+        <EdicionesPasadas />
+      </div>
+    </Seccion>
+
+    <Seccion titulo="El lugar" acento="electrico" subtitulo={`${EVENTO.lugar}, Nocaima`}>
+      <Galeria evento={EVENTO} />
     </Seccion>
 
     <Seccion id="confirmar">
-      <Rsvp />
+      <Rsvp evento={EVENTO} />
     </Seccion>
+
   </main>
 
-  <Footer />
+  <Footer evento={EVENTO} />
 </Layout>

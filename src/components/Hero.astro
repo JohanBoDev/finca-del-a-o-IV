@@ -1,8 +1,19 @@
 ---
-import { EVENTO } from '../config/evento';
+import type { Evento } from '../config/evento';
 import CuentaRegresiva from './CuentaRegresiva.astro';
 import BotonWhatsapp from './BotonWhatsapp.astro';
 import Icono from './Icono.astro';
+
+interface Props {
+  evento: Evento;
+  /**
+   * Edición que ya pasó: sin cuenta regresiva ni botón de confirmar.
+   * En su lugar va a dónde volver (la fiesta que viene).
+   */
+  recuerdo?: { volverA: string; textoVolver: string };
+}
+
+const { evento: EVENTO, recuerdo } = Astro.props;
 ---
 
 <header class="relative flex min-h-svh flex-col items-center justify-center overflow-hidden px-5 py-20 text-center">
@@ -22,7 +33,7 @@ import Icono from './Icono.astro';
     <p
       class="aparece mb-5 text-xs font-semibold uppercase tracking-[0.45em] text-electrico sm:text-sm"
     >
-      {EVENTO.tagline}
+      {recuerdo ? `Así fue la ${EVENTO.tagline.toLowerCase()}` : EVENTO.tagline}
     </p>
 
     <h1 class="aparece flex flex-col items-center" style="animation-delay:80ms">
@@ -84,16 +95,35 @@ import Icono from './Icono.astro';
       <span class="font-semibold text-hueso">{EVENTO.lugar}</span> · {EVENTO.ubicacion}
     </p>
 
-    <div class="aparece mt-12 w-full" style="animation-delay:340ms">
-      <p class="mb-5 text-[10px] font-semibold uppercase tracking-[0.3em] text-humo sm:text-xs">
-        Falta poco
-      </p>
-      <CuentaRegresiva />
-    </div>
+    {
+      recuerdo ? (
+        <div class="aparece mt-12 flex flex-col items-center gap-6" style="animation-delay:340ms">
+          <p class="text-sm text-humo sm:text-base">
+            <span class="display text-3xl text-neon glow-neon sm:text-4xl">{EVENTO.confirmados}</span>
+            <span class="ml-2 uppercase tracking-[0.25em]">fueron · {EVENTO.duracionTexto}</span>
+          </p>
+          <a
+            href={recuerdo.volverA}
+            class="inline-flex items-center gap-2.5 rounded-full bg-neon px-7 py-4 font-bold uppercase tracking-wide text-noche transition-all hover:bg-neon-suave hover:shadow-[0_0_36px_rgb(var(--rgb-neon)/0.65)]"
+          >
+            {recuerdo.textoVolver}
+          </a>
+        </div>
+      ) : (
+        <>
+          <div class="aparece mt-12 w-full" style="animation-delay:340ms">
+            <p class="mb-5 text-[10px] font-semibold uppercase tracking-[0.3em] text-humo sm:text-xs">
+              Falta poco
+            </p>
+            <CuentaRegresiva evento={EVENTO} />
+          </div>
 
-    <div class="aparece mt-12" style="animation-delay:400ms">
-      <BotonWhatsapp texto="Confirmar mi cupo" tamano="lg" />
-    </div>
+          <div class="aparece mt-12" style="animation-delay:400ms">
+            <BotonWhatsapp evento={EVENTO} texto="Confirmar mi cupo" tamano="lg" />
+          </div>
+        </>
+      )
+    }
   </div>
 
   <a

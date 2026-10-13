@@ -1,6 +1,13 @@
 ---
-import { EVENTO, cuposRestantes, porcentajeOcupado } from '../config/evento';
+import { cuposRestantes as calcularCupos, porcentajeOcupado as calcularOcupacion, type Evento } from '../config/evento';
 
+interface Props {
+  evento: Evento;
+}
+
+const { evento: EVENTO } = Astro.props;
+const cuposRestantes = calcularCupos(EVENTO);
+const porcentajeOcupado = calcularOcupacion(EVENTO);
 const lleno = cuposRestantes === 0;
 ---
 
@@ -41,7 +48,7 @@ const lleno = cuposRestantes === 0;
               <span class="font-bold text-hueso">
                 {cuposRestantes} {cuposRestantes === 1 ? 'cupo' : 'cupos'}
               </span>{' '}
-              · {EVENTO.camas} camas para los que se quedan
+              · {EVENTO.dormir} para los que se quedan
             </>
           )
         }

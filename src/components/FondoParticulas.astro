@@ -70,8 +70,8 @@
   .aurora-azul {
     background: radial-gradient(
       circle,
-      rgba(20, 165, 245, 0.55) 0%,
-      rgba(20, 165, 245, 0.22) 38%,
+      rgb(var(--rgb-electrico) / 0.55) 0%,
+      rgb(var(--rgb-electrico) / 0.22) 38%,
       transparent 68%
     );
   }
@@ -79,8 +79,8 @@
   .aurora-cian {
     background: radial-gradient(
       circle,
-      rgba(56, 200, 255, 0.42) 0%,
-      rgba(20, 120, 200, 0.18) 40%,
+      rgb(var(--rgb-electrico-suave) / 0.42) 0%,
+      rgb(var(--rgb-electrico) / 0.18) 40%,
       transparent 70%
     );
   }
@@ -88,8 +88,8 @@
   .aurora-neon {
     background: radial-gradient(
       circle,
-      rgba(216, 230, 0, 0.3) 0%,
-      rgba(216, 230, 0, 0.12) 38%,
+      rgb(var(--rgb-neon) / 0.3) 0%,
+      rgb(var(--rgb-neon) / 0.12) 38%,
       transparent 68%
     );
   }
@@ -194,11 +194,19 @@
      ============================================================== */
 
   if (lienzo && ctx) {
-    // Paleta del flyer: azul eléctrico, amarillo neón y chispas blancas.
+    // Paleta de la edición (variables --rgb-* de global.css): acento
+    // secundario, acento principal y chispas claras.
+    const estilos = getComputedStyle(document.documentElement);
+    const canales = (nombre: string, respaldo: number[]) => {
+      const valores = estilos.getPropertyValue(nombre).trim().split(/\s+/).map(Number);
+      return valores.length === 3 && valores.every((v) => !Number.isNaN(v)) ? valores : respaldo;
+    };
+    const NEON = canales('--rgb-neon', [216, 230, 0]);
+    const ELECTRICO = canales('--rgb-electrico', [40, 175, 250]);
     const PALETA = [
-      { rgb: [40, 175, 250], peso: 0.42 },
-      { rgb: [216, 230, 0], peso: 0.26 },
-      { rgb: [230, 244, 255], peso: 0.32 },
+      { rgb: ELECTRICO, peso: 0.42 },
+      { rgb: NEON, peso: 0.26 },
+      { rgb: canales('--rgb-chispa', [230, 244, 255]), peso: 0.32 },
     ];
 
     const RADIO_CURSOR = 190;
@@ -393,7 +401,7 @@
           p.empujeX += (dx / dist) * cercania * 26 * delta;
           p.empujeY += (dy / dist) * cercania * 26 * delta;
 
-          ctx.strokeStyle = `rgba(216,230,0,${cercania * 0.14})`;
+          ctx.strokeStyle = `rgba(${NEON.join(',')},${cercania * 0.14})`;
           ctx.beginPath();
           ctx.moveTo(cursor.x, cursor.y);
           ctx.lineTo(p.x, p.y);
@@ -436,14 +444,14 @@
           const radio = avance * 280;
           const alfa = (1 - avance) * 0.5;
 
-          ctx.strokeStyle = `rgba(40,175,250,${alfa})`;
+          ctx.strokeStyle = `rgba(${ELECTRICO.join(',')},${alfa})`;
           ctx.beginPath();
           ctx.arc(onda.x, onda.y, radio, 0, TAU);
           ctx.stroke();
 
           // Segundo anillo, más pequeño y amarillo, con retraso.
           if (avance > 0.15) {
-            ctx.strokeStyle = `rgba(216,230,0,${alfa * 0.6})`;
+            ctx.strokeStyle = `rgba(${NEON.join(',')},${alfa * 0.6})`;
             ctx.beginPath();
             ctx.arc(onda.x, onda.y, radio * 0.62, 0, TAU);
             ctx.stroke();

@@ -1,0 +1,64 @@
+---
+import { Picture } from 'astro:assets';
+import { FINCA_IV } from '../config/finca-iv';
+
+/**
+ * Tarjetas hacia las ediciones que ya pasaron. Cuando la V sea
+ * recuerdo, se agrega aquí con su ruta y listo.
+ */
+const portadas = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/assets/fotos/*/*.{jpg,jpeg,png,webp,avif,JPG,JPEG,PNG,WEBP,AVIF}',
+  { eager: true },
+);
+
+const primeraFoto = (carpeta: string) =>
+  Object.entries(portadas)
+    .filter(([ruta]) => ruta.startsWith(`/src/assets/fotos/${carpeta}/`))
+    .sort(([a], [b]) => a.localeCompare(b, 'es', { numeric: true }))[0]?.[1].default;
+
+const ediciones = [{ evento: FINCA_IV, ruta: '/iv' }].map(({ evento, ruta }) => ({
+  evento,
+  ruta,
+  portada: primeraFoto(evento.carpetaFotos),
+}));
+---
+
+<div class="grid gap-5 sm:grid-cols-2">
+  {
+    ediciones.map(({ evento, ruta, portada }) => (
+      <a
+        href={ruta}
+        class="group relative block h-72 overflow-hidden rounded-2xl border border-white/10 transition-colors hover:border-neon/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neon sm:col-span-2 sm:h-80"
+      >
+        {portada && (
+          <Picture
+            src={portada}
+            alt=""
+            formats={['avif', 'webp']}
+            widths={[600, 1000, 1400]}
+            sizes="(max-width: 1024px) 100vw, 1024px"
+            loading="lazy"
+            class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+        )}
+        <div class="absolute inset-0 bg-linear-to-t from-noche via-noche/60 to-noche/10" />
+
+        <div class="relative flex h-full flex-col justify-end p-7 sm:p-9">
+          <p class="text-[10px] font-semibold uppercase tracking-[0.3em] text-humo">
+            {evento.mesTexto} · {evento.lugar}
+          </p>
+          <p class="display-italic mt-3 text-4xl text-hueso sm:text-5xl">
+            La Finca <span class="text-neon glow-neon">{evento.edicion}</span>
+          </p>
+          <p class="mt-3 text-sm text-humo">
+            {evento.confirmados} personas · {evento.duracionTexto}
+          </p>
+          <span class="mt-5 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-neon">
+            Ver cómo fue
+            <span class="transition-transform group-hover:translate-x-1">→</span>
+          </span>
+        </div>
+      </a>
+    ))
+  }
+</div>

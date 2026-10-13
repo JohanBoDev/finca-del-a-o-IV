@@ -1,13 +1,27 @@
 ---
 import { Picture, getImage } from 'astro:assets';
+import type { Evento } from '../config/evento';
+
+interface Props {
+  evento: Evento;
+}
+
+const { evento } = Astro.props;
 
 /**
- * Lee automáticamente todo lo que haya en src/assets/fotos/
+ * Lee automáticamente todo lo que haya en src/assets/fotos/<edición>/
  * No hay que registrar nada: tú sueltas los archivos ahí y aparecen.
+ *
+ * El glob tiene que ser un texto fijo, así que se leen todas las
+ * carpetas y después se filtra la de esta edición.
  */
-const modulos = import.meta.glob<{ default: ImageMetadata }>(
-  '/src/assets/fotos/*.{jpg,jpeg,png,webp,avif,JPG,JPEG,PNG,WEBP,AVIF}',
+const todas = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/assets/fotos/*/*.{jpg,jpeg,png,webp,avif,JPG,JPEG,PNG,WEBP,AVIF}',
   { eager: true },
+);
+const prefijo = `/src/assets/fotos/${evento.carpetaFotos}/`;
+const modulos = Object.fromEntries(
+  Object.entries(todas).filter(([ruta]) => ruta.startsWith(prefijo)),
 );
 
 /**
@@ -29,7 +43,7 @@ const textoAlternativo = (ruta: string, indice: number) => {
       ?.replace(/\.[^.]+$/, '')
       .trim() ?? '';
 
-  const generico = `Finca Palma Azul — foto ${indice + 1}`;
+  const generico = `${evento.lugar} — foto ${indice + 1}`;
 
   // Se evalúa el nombre crudo: si se limpiara primero, un UUID como
   // "51311171-de4b-..." perdería el bloque inicial y pasaría el filtro.
@@ -86,7 +100,7 @@ const fotos = await Promise.all(
       <p class="display-italic text-2xl text-humo sm:text-3xl">Fotos en camino</p>
       <p class="mx-auto mt-4 max-w-md text-sm leading-relaxed text-humo">
         Suelta las fotos de la finca en{' '}
-        <code class="rounded bg-noche-3 px-2 py-1 text-neon">src/assets/fotos/</code> y aparecen
+        <code class="rounded bg-noche-3 px-2 py-1 text-neon">src/assets/fotos/{evento.carpetaFotos}/</code> y aparecen
         aquí solas. No hay que tocar código.
       </p>
     </div>

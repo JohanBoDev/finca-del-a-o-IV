@@ -1,6 +1,13 @@
 ---
-import { EVENTO, cuposRestantes } from '../config/evento';
+import { cuposRestantes as calcularCupos, type Evento } from '../config/evento';
 import BotonWhatsapp from './BotonWhatsapp.astro';
+
+interface Props {
+  evento: Evento;
+}
+
+const { evento: EVENTO } = Astro.props;
+const cuposRestantes = calcularCupos(EVENTO);
 ---
 
 <div class="relative overflow-hidden rounded-3xl border border-neon/30 bg-noche-2/70 px-6 py-16 text-center sm:px-12 sm:py-20">
@@ -17,7 +24,7 @@ import BotonWhatsapp from './BotonWhatsapp.astro';
     </p>
 
     <div class="mt-10">
-      <BotonWhatsapp texto="Confirmar mi cupo" tamano="lg" />
+      <BotonWhatsapp evento={EVENTO} texto="Confirmar mi cupo" tamano="lg" />
     </div>
 
     <p class="mt-8 text-xs uppercase tracking-[0.25em] text-humo">
@@ -29,8 +36,8 @@ import BotonWhatsapp from './BotonWhatsapp.astro';
     </p>
 
     <p class="mt-4 text-sm text-humo">
-      Son {EVENTO.duracionTexto}. Si te quedas a dormir dilo en el mensaje, y di qué noches:
-      hay solo <span class="font-semibold text-neon">{EVENTO.camas} camas</span>.
+      Son {EVENTO.duracionTexto}. Si te quedas a dormir dilo en el mensaje: hay solo{' '}
+      <span class="font-semibold text-neon">{EVENTO.dormir}</span>.
     </p>
   </div>
 </div>

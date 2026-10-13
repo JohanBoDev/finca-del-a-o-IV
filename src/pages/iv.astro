@@ -1,0 +1,55 @@
+---
+/**
+ * La IV como recuerdo: se queda con su paleta original y sus fotos,
+ * pero sin cuenta regresiva, contador ni botón de confirmar.
+ */
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import Seccion from '../components/Seccion.astro';
+import Galeria from '../components/Galeria.astro';
+import Rollo from '../components/Rollo.astro';
+import Videos from '../components/Videos.astro';
+import Footer from '../components/Footer.astro';
+import { FINCA_IV as EVENTO } from '../config/finca-iv';
+import { FINCA_V } from '../config/finca-v';
+
+const volver = { volverA: '/', textoVolver: `Ir a la Finca ${FINCA_V.edicion} →` };
+---
+
+<Layout
+  evento={EVENTO}
+  descripcion={`Así fue La Finca del Año ${EVENTO.edicion}: ${EVENTO.lugar}, ${EVENTO.fechaTexto}. Ya viene la ${FINCA_V.edicion}.`}
+>
+  <Hero evento={EVENTO} recuerdo={volver} />
+
+  <main id="info">
+    <Seccion titulo="El rollo" subtitulo="Lo que quedó en la cámara vieja">
+      <Rollo estampa="'26 8 8" />
+    </Seccion>
+
+    <Seccion titulo="En video" acento="electrico" subtitulo="Dale play">
+      <Videos carpeta="iv" />
+    </Seccion>
+
+    <Seccion titulo="La finca" acento="electrico" subtitulo={`${EVENTO.lugar} · ${EVENTO.ubicacion}`}>
+      <Galeria evento={EVENTO} />
+    </Seccion>
+
+    <Seccion>
+      <div class="text-center">
+        <p class="display-italic text-3xl text-hueso sm:text-5xl">
+          La próxima es la <span class="text-neon glow-neon">{FINCA_V.edicion}</span>
+        </p>
+        <p class="mt-4 text-humo">{FINCA_V.fechaTexto} · {FINCA_V.lugar}</p>
+        <a
+          href="/"
+          class="mt-8 inline-flex items-center gap-2.5 rounded-full border border-neon/60 px-7 py-3.5 text-sm font-semibold uppercase tracking-wide text-neon transition-all hover:border-neon hover:bg-neon/10"
+        >
+          Ver la Finca {FINCA_V.edicion} y confirmar →
+        </a>
+      </div>
+    </Seccion>
+  </main>
+
+  <Footer evento={EVENTO} />
+</Layout>

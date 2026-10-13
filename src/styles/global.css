@@ -2,7 +2,8 @@
 
 /* ============================================================
    SISTEMA DE DISEÑO — heredado de la pancarta
-   Negro nocturno + amarillo neón + azul eléctrico.
+   Negro nocturno + amarillo neón + azul eléctrico (la IV).
+   La V cambia los acentos más abajo; los nombres se mantienen.
    ============================================================ */
 
 @theme {
@@ -25,6 +26,40 @@
   /* Tipografía */
   --font-display: "Anton", "Arial Narrow", sans-serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Los mismos acentos en canales sueltos, para las transparencias de
+   los resplandores: rgb(var(--rgb-neon) / 0.4). */
+:root {
+  --rgb-neon: 216 230 0;
+  --rgb-electrico: 20 165 245;
+  --rgb-electrico-suave: 92 200 255;
+  --rgb-chispa: 230 244 255;
+}
+
+/* ------------------------------------------------------------
+   PALETA DE LA V — Casa Blanca
+   Misma noche, otros neones: rosa de fiesta + turquesa de
+   piscina, y un blanco cálido por el nombre de la finca.
+   Se activa con <html data-edicion="v"> (lo pone el Layout).
+   ------------------------------------------------------------ */
+html[data-edicion="v"] {
+  --color-noche: #0c0816;
+  --color-noche-2: #150f24;
+  --color-noche-3: #221a38;
+
+  --color-neon: #ff4fa3;
+  --color-neon-suave: #ff85c0;
+  --color-electrico: #22e0c4;
+  --color-electrico-suave: #7af0dc;
+
+  --color-hueso: #fbf7f1;
+  --color-humo: #bdb3cc;
+
+  --rgb-neon: 255 79 163;
+  --rgb-electrico: 34 224 196;
+  --rgb-electrico-suave: 122 240 220;
+  --rgb-chispa: 255 246 236;
 }
 
 /* ------------------------------------------------------------
@@ -88,37 +123,37 @@ body {
 
 .glow-neon {
   text-shadow:
-    0 0 8px rgba(216, 230, 0, 0.55),
-    0 0 28px rgba(216, 230, 0, 0.3),
-    0 0 60px rgba(216, 230, 0, 0.15);
+    0 0 8px rgb(var(--rgb-neon) / 0.55),
+    0 0 28px rgb(var(--rgb-neon) / 0.3),
+    0 0 60px rgb(var(--rgb-neon) / 0.15);
 }
 
 .glow-electrico {
   text-shadow:
-    0 0 8px rgba(20, 165, 245, 0.6),
-    0 0 28px rgba(20, 165, 245, 0.35),
-    0 0 60px rgba(20, 165, 245, 0.18);
+    0 0 8px rgb(var(--rgb-electrico) / 0.6),
+    0 0 28px rgb(var(--rgb-electrico) / 0.35),
+    0 0 60px rgb(var(--rgb-electrico) / 0.18);
 }
 
 .glow-blanco {
   text-shadow:
     0 0 10px rgba(255, 255, 255, 0.35),
-    0 0 40px rgba(120, 190, 255, 0.25);
+    0 0 40px rgb(var(--rgb-electrico-suave) / 0.25);
 }
 
 /* Marco tipo letrero de neón, como los recuadros del flyer */
 .marco-neon {
   border: 2px solid var(--color-neon);
   box-shadow:
-    0 0 12px rgba(216, 230, 0, 0.4),
-    inset 0 0 12px rgba(216, 230, 0, 0.12);
+    0 0 12px rgb(var(--rgb-neon) / 0.4),
+    inset 0 0 12px rgb(var(--rgb-neon) / 0.12);
 }
 
 .marco-electrico {
   border: 2px solid var(--color-electrico);
   box-shadow:
-    0 0 12px rgba(20, 165, 245, 0.4),
-    inset 0 0 12px rgba(20, 165, 245, 0.12);
+    0 0 12px rgb(var(--rgb-electrico) / 0.4),
+    inset 0 0 12px rgb(var(--rgb-electrico) / 0.12);
 }
 
 /* ------------------------------------------------------------
@@ -128,9 +163,9 @@ body {
 /* Neblina azul-verdosa, como el aire de la foto nocturna */
 .neblina {
   background-image:
-    radial-gradient(60% 45% at 15% 0%, rgba(20, 165, 245, 0.16), transparent 70%),
-    radial-gradient(50% 40% at 90% 20%, rgba(216, 230, 0, 0.1), transparent 70%),
-    radial-gradient(70% 60% at 50% 110%, rgba(20, 165, 245, 0.12), transparent 70%);
+    radial-gradient(60% 45% at 15% 0%, rgb(var(--rgb-electrico) / 0.16), transparent 70%),
+    radial-gradient(50% 40% at 90% 20%, rgb(var(--rgb-neon) / 0.1), transparent 70%),
+    radial-gradient(70% 60% at 50% 110%, rgb(var(--rgb-electrico) / 0.12), transparent 70%);
 }
 
 /* Línea divisoria que se desvanece, como las del flyer */
@@ -143,7 +178,7 @@ body {
     var(--color-electrico) 65%,
     transparent
   );
-  box-shadow: 0 0 10px rgba(216, 230, 0, 0.5);
+  box-shadow: 0 0 10px rgb(var(--rgb-neon) / 0.5);
 }
 
 /* ------------------------------------------------------------
