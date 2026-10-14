@@ -1,7 +1,7 @@
 # La Finca del Año
 
 Página de información y confirmación de la fiesta. La principal es la **V**
-(sábado 14 y domingo 15 de noviembre de 2026, Finca Casa Blanca, Nocaima);
+(sábado 21 y domingo 22 de noviembre de 2026, Finca Casa Blanca, Nocaima);
 la **IV** queda en `/iv` como recuerdo.
 
 Se comparte por WhatsApp: quien abre el link ve la fecha, la cuenta regresiva,

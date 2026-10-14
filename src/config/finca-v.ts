@@ -22,16 +22,16 @@ export const FINCA_V: Evento = {
   og: '/og.jpg',
 
   // --- Cuándo ----------------------------------------------
-  // Sábado 14 a las 3:00 PM hasta el domingo 15 a las 5:00 PM.
-  fechaISO: '2026-11-14T15:00:00-05:00',
-  fechaFinISO: '2026-11-15T17:00:00-05:00',
+  // Sábado 21 a las 3:00 PM hasta el domingo 22 a las 5:00 PM.
+  fechaISO: '2026-11-21T15:00:00-05:00',
+  fechaFinISO: '2026-11-22T17:00:00-05:00',
   dias: [
-    { rotulo: 'Sáb', numero: '14' },
-    { rotulo: 'Dom', numero: '15' },
+    { rotulo: 'Sáb', numero: '21' },
+    { rotulo: 'Dom', numero: '22' },
   ],
   mesTexto: 'Noviembre 2026',
-  fechaTexto: 'Sábado 14 y Domingo 15 de noviembre de 2026',
-  fechaBreve: 'Sábado 14 y Domingo 15',
+  fechaTexto: 'Sábado 21 y Domingo 22 de noviembre de 2026',
+  fechaBreve: 'Sábado 21 y Domingo 22',
   duracionTexto: '2 días, 1 noche',
   horaTexto: '3:00 PM',
   notaHora: 'Llegada desde las 3:00 PM del sábado · salida el domingo a las 5:00 PM',
@@ -58,6 +58,6 @@ export const FINCA_V: Evento = {
     numero: '573224395306',
     // Termina en "Nombre: " para que la persona solo escriba y envíe.
     mensaje:
-      '¡Hola! Confirmo mi asistencia a La Finca del Año V 🌴 (14 y 15 de noviembre)\n\nNombre: ',
+      '¡Hola! Confirmo mi asistencia a La Finca del Año V 🌴 (21 y 22 de noviembre)\n\nNombre: ',
   },
 };

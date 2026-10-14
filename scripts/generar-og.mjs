@@ -68,7 +68,7 @@ async function finca5() {
       </g>
       <rect x="110" y="400" width="300" height="3" fill="${ROSA}"/>
       <g font-family="'Arial', sans-serif" font-weight="bold">
-        <text x="110" y="460" font-size="34" fill="#fbf7f1">SÁB 14 · DOM 15 NOV</text>
+        <text x="110" y="460" font-size="34" fill="#fbf7f1">SÁB 21 · DOM 22 NOV</text>
         <text x="110" y="505" font-size="26" fill="#bdb3cc">Casa Blanca · Nocaima · 3:00 PM</text>
       </g>
     </svg>
